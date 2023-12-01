@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>To-Do List</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #container {
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      border-radius: 8px;
+      width: 400px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    label {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+    input {
+      padding: 8px;
+      font-size: 14px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    #uploadBtn {
+      margin-top: 10px;
+    }
+    .task {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #ccc;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      background-color: #fff;
+    }
+    .delete-btn {
+      background-color: #ff3333;
+      color: white;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="container">
+  <h1>To-Do List</h1>
+  <form id="taskForm">
+    <label for="taskInput">Add a new task:</label>
+    <input type="text" id="taskInput" name="taskInput" required>
+    <button type="button" onclick="addTask()">Add Task</button>
+  </form>
+
+  <div id="uploadBtn">
+    <label for="fileInput">Upload tasks from Excel:</label>
+    <input type="file" id="fileInput" accept=".xls, .xlsx" onchange="handleFile()">
+    <button type="button" onclick="uploadTasks()">Upload</button>
+  </div>
+
+  <ul id="taskList"></ul>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+<script>
+  function addTask() {
+    var taskInput = document.getElementById('taskInput');
+    var taskList = document.getElementById('taskList');
+
+    if (taskInput.value.trim() === '') {
+      alert('Please enter a task.');
+      return;
+    }
+
+    var taskItem = document.createElement('li');
+    taskItem.className = 'task';
+    taskItem.innerHTML = `
+      <span>${taskInput.value}</span>
+      <button class="delete-btn" onclick="removeTask(this)">Delete</button>
+    `;
+
+    taskList.appendChild(taskItem);
+    taskInput.value = '';
+  }
+
+  function removeTask(btn) {
+    var taskItem = btn.parentNode;
+    var taskList = taskItem.parentNode;
+    taskList.removeChild(taskItem);
+  }
+
+  function handleFile() {
+    var fileInput = document.getElementById('fileInput');
+    var file = fileInput.files[0];
+
+    if (file) {
+      var reader = new FileReader();
+
+      reader.onload = function (e) {
+        var data = e.target.result;
+        // Use SheetJS to parse Excel data
+        var workbook = XLSX.read(data, { type: 'binary' });
+    
+        var firstSheetName = workbook.SheetNames[0];
+        var worksheet = workbook.Sheets[firstSheetName];
+        // Process the worksheet data
+        console.log(XLSX.utils.sheet_to_json(worksheet));
+      };
+
+      reader.readAsBinaryString(file);
+    }
+  }
+
+  function uploadTasks() {
+
+    alert('Tasks uploaded successfully!');
+  }
+</script>
+
+</body>
+</html>
